@@ -1,0 +1,33 @@
+Name: deploy_static_frontend
+SchemaVersion: "1.0"
+
+Triggers:
+  - Type: Push
+    Branches:
+      - main
+
+Actions:
+  BuildFrontend:
+    Identifier: aws/build@v1
+    Inputs:
+      Sources:
+        - WorkflowSource
+    Outputs:
+      Artifacts:
+        - Name: frontend
+          Files:
+            - frontend/**
+    Configuration:
+      Steps:
+        - Run: echo "Build selesai"
+
+  DeployToS3:
+    Identifier: aws/build@v1
+    Inputs:
+      Sources:
+        - WorkflowSource
+    Configuration:
+      Steps:
+        - Run: |
+            echo "Deploying ke S3..."
+            aws s3 cp frontend/ s3://nita-s3-website-demo/ --recursive
