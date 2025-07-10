@@ -1,4 +1,4 @@
-Name: deploy_static_site
+Name: DeployFrontendToS3
 SchemaVersion: "1.0"
 
 Triggers:
@@ -7,34 +7,16 @@ Triggers:
       - main
 
 Actions:
-  BuildFrontend:
+  DeployFrontend:
     Identifier: aws/build@v1
     Inputs:
       Sources:
         - WorkflowSource
-    Outputs:
-      Artifacts:
-        - Name: frontend
-          Files:
-            - frontend/**
-    Configuration:
-      Steps:
-        - Run: |
-            echo "📦 Menampilkan isi folder frontend:"
-            ls frontend/
-
-  DeployToS3:
-    Identifier: aws/build@v1
+    Compute:
+      Type: EC2
     Environment:
-      Name: env-deploy-s3
-      Connections:
-        - Name: aws
-          Role: CodeCatalystWorkflowDevelopmentRole-nitaokta-lab
-    Inputs:
-      Sources:
-        - WorkflowSource
+      Name: env-deploy-frontend
     Configuration:
       Steps:
-        - Run: |
-            echo "🚀 Upload ke S3..."
-            aws s3 cp frontend/ s3://nita-s3-website-demo/ --recursive
+        - Run: echo "🚀 Deploying frontend ke S3..."
+        - Run: aws s3 cp frontend/ s3://nita-frontend-bucket/ --recursive
