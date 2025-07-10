@@ -1,4 +1,4 @@
-Name: deploy_static_frontend
+Name: deploy_static_site
 SchemaVersion: "1.0"
 
 Triggers:
@@ -19,15 +19,22 @@ Actions:
             - frontend/**
     Configuration:
       Steps:
-        - Run: echo "Build selesai"
+        - Run: |
+            echo "📦 Menampilkan isi folder frontend:"
+            ls frontend/
 
   DeployToS3:
     Identifier: aws/build@v1
+    Environment:
+      Name: env-deploy-s3
+      Connections:
+        - Name: aws
+          Role: CodeCatalystWorkflowDevelopmentRole-nitaokta-lab
     Inputs:
       Sources:
         - WorkflowSource
     Configuration:
       Steps:
         - Run: |
-            echo "Deploying ke S3..."
+            echo "🚀 Upload ke S3..."
             aws s3 cp frontend/ s3://nita-s3-website-demo/ --recursive
